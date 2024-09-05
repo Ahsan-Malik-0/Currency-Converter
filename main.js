@@ -6,6 +6,10 @@ const fromCurr = document.querySelector(".from select");
 const toCurr = document.querySelector(".to select");
 const msg = document.querySelector(".msg");
 
+window.addEventListener("load", () => {
+    updateExchangeRate();
+})
+
 for (const select of dropdowns) {
     for (const currCode in countryList) {
         let newOption = document.createElement('option');
@@ -39,6 +43,10 @@ const updateFlag = (element) => {
 
 btn.addEventListener("click", async (evt) => {
     evt.preventDefault();
+    updateExchangeRate();
+})
+
+const updateExchangeRate = async () => {
     let amount = document.querySelector(".amount input");
     let amountValue = amount.value;
 
@@ -47,18 +55,18 @@ btn.addEventListener("click", async (evt) => {
         amount.value = 1;
     }
 
-    // console.log(fromCurr.value, toCurr.value);
     const URL = `${BASE_URL}${fromCurr.value}%2C${toCurr.value}`;
     let response = await fetch(URL);
     let data = await response.json();
 
-    // Access the exchange rates for both currencies
     let fromCurrencyData = data.data[fromCurr.value].value;
     let toCurrencyData = data.data[toCurr.value].value;
 
-    let totalAmount = amountValue * toCurrencyData;
+    let exchangeRate = toCurrencyData / fromCurrencyData;
 
-    msg.innerHTML = `${amountValue} ${fromCurr.value} = ${totalAmount.toFixed(2)} ${toCurr.value}`
+    let totalAmount = amountValue * exchangeRate;
 
 
-})
+    msg.innerHTML = `${amountValue} ${fromCurr.value} = ${totalAmount.toFixed(5)} ${toCurr.value}`
+
+}
